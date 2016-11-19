@@ -1,38 +1,21 @@
-/* #include <QtGlobal>
-#if QT_VERSION < 0x050000
-#include <QtGui>
-#else
-#include <QtWidgets>
-#endif
-
-#include <otherfile.h>
-
-using namespace std;
-
-int main(int argc, char *argv[])
-{
-    QApplication app(argc,argv);
-
-    QWidget *widget = new QWidget;
-
-    widget->show();
-
-    return app.exec();
-}*/
-
-
-#include <MainWindow.h>
 #include <QApplication>
+#include <QCommandLineParser>
 
+#include "imageviewer.h"
 
 int main(int argc, char *argv[])
 {
- QApplication app(argc, argv);
-
- MainWindow *mainWindow = new MainWindow;
- mainWindow->showMaximized();
-
-
-
- return app.exec();
+    QApplication app(argc, argv);
+    QGuiApplication::setApplicationDisplayName(ImageViewer::tr("Image Viewer"));
+    QCommandLineParser commandLineParser;
+    commandLineParser.addHelpOption();
+    commandLineParser.addPositionalArgument(ImageViewer::tr("[file]"), ImageViewer::tr("Image file to open."));
+    commandLineParser.process(QCoreApplication::arguments());
+    ImageViewer imageViewer;
+    if (!commandLineParser.positionalArguments().isEmpty()
+        && !imageViewer.loadFile(commandLineParser.positionalArguments().front())) {
+        return -1;
+    }
+    imageViewer.show();
+    return app.exec();
 }
